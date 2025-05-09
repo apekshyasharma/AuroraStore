@@ -1,0 +1,219 @@
+@charset "UTF-8";
+
+/* ========== BASE STYLES ========== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Georgia, serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* ========== SECTION COMMON STYLES ========== */
+.stationery-section,
+.snd_stationery-section,
+.third-stationery-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff0f5;
+    padding: 40px 20px;
+    border-radius: 20px;
+    margin: 40px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+}
+
+/* ========== FIRST SECTION STYLES ========== */
+.stationery-section {
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.stationery-image img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+.stationery-info {
+    max-width: 500px;
+}
+
+.stationery-info h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.stationery-info p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* ========== SECOND SECTION STYLES ========== */
+.snd_stationery-section {
+    flex-direction: column;
+    text-align: center;
+}
+
+.snd_stationery-image img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 12px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.snd_stationery-info h3 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+.snd_stationery-info p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ========== THIRD SECTION STYLES ========== */
+.third-stationery-section {
+    flex-wrap: wrap;
+    gap: 40px;
+    text-align: left;
+}
+
+.third-stationery-image img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+.third-stationery-info {
+    max-width: 500px;
+}
+
+.third-stationery-info h3 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+.third-stationery-info p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ========== BUTTON STYLES ========== */
+.shop-button,
+.snd_shop-button,
+.third-shop-button {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+}
+
+.shop-button {
+    background-color: #ff0080;
+    color: #fff;
+}
+
+.shop-button:hover {
+    background-color: #800040;
+}
+
+.snd_shop-button {
+    background-color: #ff0000;
+    color: white;
+}
+
+.snd_shop-button:hover {
+    background-color: #ff8000;
+}
+
+.third-shop-button {
+    background-color: #004000;
+    color: white;
+}
+
+.third-shop-button:hover {
+    background-color: #ffff00;
+}
+
+/* ========== RESPONSIVE STYLES ========== */
+@media (max-width: 768px) {
+    .stationery-section,
+    .third-stationery-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .stationery-info,
+    .snd_stationery-info,
+    .third-stationery-info {
+        text-align: center;
+    }
+    
+    .stationery-image img,
+    .snd_stationery-image img,
+    .third-stationery-image img {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .stationery-section,
+    .snd_stationery-section,
+    .third-stationery-section {
+        padding: 25px 15px;
+        margin: 25px auto;
+    }
+    
+    .stationery-info h3,
+    .snd_stationery-info h3,
+    .third-stationery-info h3 {
+        font-size: 24px;
+    }
+    
+    .shop-button,
+    .snd_shop-button,
+    .third-shop-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}

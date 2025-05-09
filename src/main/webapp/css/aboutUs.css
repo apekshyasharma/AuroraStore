@@ -1,0 +1,65 @@
+@charset "UTF-8";
+/* ========== SIMPLE ABOUT STYLES ========== */
+.simple-about {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.about-store-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.about-text-content h1 {
+    color: #000000;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.about-history p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #000000;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.simple-list {
+    list-style: none;
+    padding: 20px;
+    background: #fff0f5;
+    border-radius: 10px;
+    margin: 25px 0;
+}
+
+.simple-list li {
+    padding: 8px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.store-philosophy {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.store-philosophy h2 {
+    color: #000000;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.store-philosophy p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 15px;
+}
+

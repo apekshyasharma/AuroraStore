@@ -1,0 +1,33 @@
+@charset "UTF-8";
+#footer {
+    background-color: #ff0080; 
+    color: #ffffff; 
+    padding: 20px;
+    text-align: center;
+    margin-top: auto; /* Ensures footer goes to bottom in flex layout */
+    font-family: Georgia, serif;
+}
+
+#footer p {
+    margin-bottom: 10px;
+}
+
+#footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#footer li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#footer a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#footer a:hover {
+    color: #ff80ff;
+}
