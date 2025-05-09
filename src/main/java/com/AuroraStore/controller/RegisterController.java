@@ -6,6 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.AuroraStore.model.UsersModel;
@@ -31,56 +34,66 @@ public class RegisterController extends HttpServlet {
 	}
 
 	/**
-	 * Handles POST request foruser registration.
+	 * Handles POST request for user registration.
 	 * Validates input fields, encrypts password, creates a user model,
 	 * and invokes the service to register the user.
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
-		
-		String user_name = request.getParameter("firstName");
-		String user_email=request.getParameter("email");
-		String user_password=PasswordUtil.encrypt(user_email,   request.getParameter("password"));
-		String contact_number = request.getParameter("phoneNumber");
-		String created_at=LocalDate.now().toString();
-		int role_id =Integer.parseInt(request.getParameter("usertype"));
-		
-		
-		if(ValidationUtil.isNullOrEmpty(user_name)) {
-			handleError(request, response, "Fill the Name field");
-			return ;
-		}
-		if(ValidationUtil.isNullOrEmpty(user_email)) {
-			handleError(request, response, "Fill the email field");
-			return ;
-		}
-		if(ValidationUtil.isNullOrEmpty(user_password)) {
-			handleError(request, response, "Fill the password field");
-			return ;
-		}
-		if(ValidationUtil.isNullOrEmpty(contact_number)) {
-			handleError(request, response, "Fill the phone number field");
-			return ;
-		}
-		if(ValidationUtil.isNullOrEmpty(request.getParameter("usertype"))) {
-			handleError(request, response, "Fill the user Type field");
-			return ;
-		}
-		if (!ValidationUtil.doPasswordsMatch(request.getParameter("password"), request.getParameter("retypePassword"))){
-			handleError(request, response,"Passwords do not match.");
-			return ;
-		}
-		// Create user model with validated and processed data
-		UsersModel user = new UsersModel(user_name, user_email, user_password, 
-                contact_number, created_at, role_id);
-		// Register the user through service class
-		CustomerService service = new CustomerService();
-		if(service.registerCustomer(user)) {
-			request.setAttribute("success", "Sucessfully registered");
-			request.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(request, response);	
-		}
-		}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+	        throws ServletException, IOException {
+	    
+	    // Get form parameters
+	    String userName = request.getParameter("firstName");
+	    String userEmail = request.getParameter("email");
+	    String password = request.getParameter("password");
+	    String retypePassword = request.getParameter("retypePassword");
+	    String contactNumber = request.getParameter("phoneNumber");
+	    String userType = request.getParameter("usertype");
+	    
+	    // Handle image upload (optional)
+	    String image = request.getParameter("image");
+	    if (image == null || image.trim().isEmpty()) {
+	        image = null; // Will use DB default or allow null
+	    }
+	    
+	    // Validate inputs
+	    if (ValidationUtil.isNullOrEmpty(userName)) {
+	        handleError(request, response, "Name is required");
+	        return;
+	    }
+	    
+	    if (ValidationUtil.isNullOrEmpty(userEmail) || !ValidationUtil.isValidEmail(userEmail)) {
+	        handleError(request, response, "Valid email is required");
+	        return;
+	    }
+	    
+	    if (!ValidationUtil.doPasswordsMatch(password, retypePassword)) {
+	        handleError(request, response, "Passwords do not match");
+	        return;
+	    }
+	    
+	    if (ValidationUtil.isNullOrEmpty(contactNumber)) {
+	        handleError(request, response, "Contact number is required");
+	        return;
+	    }
+	    
+	    // Create user model
+	    UsersModel user = new UsersModel();
+	    user.setUser_name(userName);
+	    user.setUser_email(userEmail);
+	    user.setUser_password(password); // Will be encrypted in service layer
+	    user.setContact_number(contactNumber);
+	    user.setRole_id(Integer.parseInt(userType));
+	    user.setImage(image);
+	    
+	    // Register user
+	    CustomerService service = new CustomerService();
+	    if (service.registerCustomer(user)) {
+	        request.setAttribute("success", "Registration successful! Please login.");
+	        response.sendRedirect(request.getContextPath() + "/login");
+	    } else {
+	        handleError(request, response, "Registration failed. Please try again.");
+	    }
+	}
 		
 	/**
 	 * Helper method to handle validation errors.
@@ -92,4 +105,34 @@ public class RegisterController extends HttpServlet {
 		req.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(req, resp);
 	}
 		
+	/**
+	 * Registers a customer in the database.
+	 * Encrypts the password and inserts user details into the database.
+	 * Returns true if registration is successful, false otherwise.
+	 */
+	public boolean registerCustomer(UsersModel user) {
+	    Connection dbConn = null; // Assume this is initialized elsewhere
+	    if (dbConn == null) {
+	        System.err.println("Database connection is not available.");
+	        return false;
+	    }
+
+	    String query = "INSERT INTO users (user_name, user_email, user_password, contact_number, created_at, role_id, image) " +
+	                   "VALUES (?, ?, ?, ?, NOW(), ?, ?)";
+
+	    try (PreparedStatement stmt = dbConn.prepareStatement(query)) {
+	        stmt.setString(1, user.getUser_name());
+	        stmt.setString(2, user.getUser_email());
+	        stmt.setString(3, PasswordUtil.encrypt(user.getUser_email(), user.getUser_password()));
+	        stmt.setString(4, user.getContact_number());
+	        stmt.setInt(5, user.getRole_id());
+	        stmt.setString(6, user.getImage() != null ? user.getImage() : "default.jpg");
+	        int result = stmt.executeUpdate();
+	        return result > 0;
+	    } catch (SQLException e) {
+	        System.err.println("Error during user registration: " + e.getMessage());
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 }
