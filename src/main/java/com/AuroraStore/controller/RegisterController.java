@@ -122,7 +122,7 @@ public class RegisterController extends HttpServlet {
             }
             
             // Store success message in session before redirect
-            request.getSession().setAttribute("success", "Registration successful! Please login.");
+            request.getSession().setAttribute("success", "Successful Registration"); // Updated message
             
             // Redirect to login page
             response.sendRedirect(request.getContextPath() + "/login");
