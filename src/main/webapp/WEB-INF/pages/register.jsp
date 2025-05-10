@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -38,12 +37,12 @@
 		<h1>Register to Aurora</h1>
 				<!-- Display error message if available -->
 		<!-- Registration form that submits to /register endpoint -->
-		<form action="${pageContext.request.contextPath}/register" method="post">
+		<form action="${pageContext.request.contextPath}/register" method="post" enctype="multipart/form-data">
 			<div class="row">
 				<div class="col">
 				<!-- Name field -->
 					<label for="firstName">Name:</label> 
-					<input type="text" id="firstName" name="firstName" required>
+					<input type="text" id="firstName" name="firstName" value="${firstName}" required>
 				</div>
 			</div>
 			<div class="row">
@@ -83,8 +82,9 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label for="image">Profile Picture:</label> <input type="file"
-						id="image" name="image">
+					<label for="image">Profile Picture:</label> 
+					<input type="file" id="image" name="image" accept="image/*">
+					<small>Supported formats: JPG, JPEG, PNG, GIF</small>
 				</div>
 			</div>		
 

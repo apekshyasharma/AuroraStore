@@ -38,6 +38,16 @@ public class ValidationUtil {
         return number != null && number.matches("^98\\d{8}$");
     }
 
+    // Add new method to check if phone number has exactly 10 digits
+    public static boolean isPhoneNumberLength10(String number) {
+        return number != null && number.length() == 10;
+    }
+
+    // Add new method to check if phone number contains only digits
+    public static boolean isNumericOnly(String number) {
+        return number != null && number.matches("^[0-9]+$");
+    }
+
     // 7. Validate if a password is composed of at least 1 capital letter, 1 number, and 1 symbol
     public static boolean isValidPassword(String password) {
         String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
