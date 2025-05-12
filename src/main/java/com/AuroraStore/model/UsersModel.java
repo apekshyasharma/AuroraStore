@@ -1,22 +1,25 @@
 package com.AuroraStore.model;
-public class UsersModel{
+
+public class UsersModel {
 	private int user_id;
 	private String user_name;
 	private String user_email;
 	private String user_password;
 	private String contact_number;
 	private String created_at;
-	private int    role_id;
+	private int role_id;
+	private String image;
 	
-	public UsersModel( String user_name, String user_email, String user_password, String contact_number,
-			String created_at, int role_id) {
+	public UsersModel(String user_name, String user_email, String user_password, String contact_number,
+			String created_at, int role_id, String image) {
 		super();
 		this.user_name = user_name;
 		this.user_email = user_email;
 		this.user_password = user_password;
 		this.contact_number = contact_number;
 		this.created_at = created_at;
-		this.role_id=role_id;
+		this.role_id = role_id;
+		this.image = image;
 	}
 	
 	public int getUser_id() {
@@ -65,8 +68,15 @@ public class UsersModel{
 		this.role_id = role_id;
 	}
 	
-	public UsersModel() {
+	public String getImage() {
+		return image;
 	}
 	
+	public void setImage(String image) {
+		this.image = image;
+	}
+	
+	public UsersModel() {
+	}
 	
 }

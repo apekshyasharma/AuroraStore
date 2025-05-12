@@ -5,19 +5,19 @@ body {
     margin: 0;
     padding: 0;
     background-color: #fff0f5;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .login-box {
-    width: 450px;
+    width: 90%;
+    max-width: 450px;
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    position: relative;
+    padding: 2rem;
     transition: transform 0.3s ease;
 }
 
@@ -36,11 +36,6 @@ h2 {
 
 .row {
     margin-bottom: 20px;
-    position: relative;
-}
-
-.col {
-    margin-bottom: 25px;
 }
 
 label {
@@ -50,7 +45,7 @@ label {
     font-weight: 500;
 }
 
-input, select {
+input {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid #ddd;
@@ -59,7 +54,7 @@ input, select {
     transition: all 0.3s ease;
 }
 
-input:focus, select:focus {
+input:focus {
     outline: none;
     border-color: #ff0080;
     box-shadow: 0 0 0 3px rgba(255, 0, 128, 0.1);
@@ -75,10 +70,50 @@ button {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #ffff00;
+    background-color: #ad1457;
+    color: #ffffff;
 }
 
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    /* Reset any inherited styles */
+    padding: 0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.remember-me label {
+    display: inline-block;
+    margin: 0 0 0 8px;
+    font-weight: normal;
+    cursor: pointer;
+    user-select: none;
+    /* Reset styles from other label rules */
+    padding: 0;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #800040;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #ff0080;
+}

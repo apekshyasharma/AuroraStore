@@ -38,10 +38,33 @@ public class ValidationUtil {
         return number != null && number.matches("^98\\d{8}$");
     }
 
+    // Add new method to check if phone number has exactly 10 digits
+    public static boolean isPhoneNumberLength10(String number) {
+        return number != null && number.length() == 10;
+    }
+
+    // Add new method to check if phone number contains only digits
+    public static boolean isNumericOnly(String number) {
+        return number != null && number.matches("^[0-9]+$");
+    }
+
     // 7. Validate if a password is composed of at least 1 capital letter, 1 number, and 1 symbol
     public static boolean isValidPassword(String password) {
         String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         return password != null && password.matches(passwordRegex);
+    }
+
+    // Add these new methods to ValidationUtil class
+    public static boolean hasMinimumLength(String password) {
+        return password != null && password.length() >= 8;
+    }
+
+    public static boolean hasSpecialCharacter(String password) {
+        return password != null && password.matches(".*[@!#$%&].*");
+    }
+
+    public static boolean hasUpperCase(String password) {
+        return password != null && password.matches(".*[A-Z].*");
     }
 
     // 8. Validate if a Part's file extension matches with image extensions (jpg, jpeg, png, gif)

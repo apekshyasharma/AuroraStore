@@ -2,91 +2,80 @@ package com.AuroraStore.controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
 
 import com.AuroraStore.model.UsersModel;
-import com.AuroraStore.service.CustomerService;
+import com.AuroraStore.service.LoginService;
+import com.AuroraStore.util.CookiesUtil;
+import com.AuroraStore.util.SessionUtil;
 
-/**
- * Servlet implementation class LoginController
- */
 @WebServlet(asyncSupported = true, urlPatterns = { "/login" })
 public class LoginController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		request.getRequestDispatcher("WEB-INF/pages/login.jsp").forward(request, response);
-	}
+    private static final long serialVersionUID = 1L;
+    private final LoginService loginService;
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-		String email = request.getParameter("email");
-		String password =request.getParameter("password");
+    public LoginController() {
+        this.loginService = new LoginService();
+    }
 
-		// 2. Validate (Optional: can be expanded later)
-		if (email == null || password.isEmpty()) {
-		    
-			// Redirect back if any field missing
-			request.setAttribute("error", "Please fill all fields.");
-			request.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(request, response);
-			return;
-		}
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(request, response);
+    }
 
-		
-		CustomerService userServices = new CustomerService();
-		UsersModel user = userServices.login(email,password);
-	
-		if (user == null) {
-			HttpSession errorSession = request.getSession();
-			errorSession.setAttribute("invalidCustomer", "Invalid Email ");
-			request.setAttribute("error", "User not found please check credentials");
-			request.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(request, response);
-
-		} else if (user != null) {
-		    HttpSession session = request.getSession();
-		    session.setAttribute("currentUser", user);
-		    request.setAttribute("success", "Login Success");
-
-		    // Create a cookie for the user role
-		    Cookie roleCookie = new Cookie("userRole", String.valueOf(user.getRole_id()));
-		    roleCookie.setMaxAge(60 * 60 * 24 * 7); // 7 days
-		    roleCookie.setPath("/"); // accessible across the whole app
-		    response.addCookie(roleCookie);
-
-		    // Forward to homepage or dashboard
-		    request.getRequestDispatcher("/WEB-INF/pages/home.jsp").forward(request, response);
-	}
-		
-		//Page redirection acc to role
-		int roleId = user.getRole_id();
-        if (roleId == 1) {
-            // Admin
-            request.getRequestDispatcher("/WEB-INF/pages/adminDashboard.jsp").forward(request, response);
-        } else if (roleId == 2) {
-            // Customer
-            request.getRequestDispatcher("/WEB-INF/pages/portfolio.jsp").forward(request, response);
-        } else {
-            // Default or unknown role
-            request.getRequestDispatcher("/WEB-INF/pages/welcome.jsp").forward(request, response);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String remember = request.getParameter("remember");
+        
+        // Input validation
+        if (email == null || email.trim().isEmpty() || 
+            password == null || password.trim().isEmpty()) {
+            handleError(request, response, "Please fill all fields");
+            return;
         }
 
-}
+        // Attempt login
+        UsersModel user = loginService.loginUser(email, password);
 
-	
-	}
+        if (user != null) {
+            // Set session attributes
+            HttpSession session = request.getSession(true);
+            session.setAttribute("currentUser", user);
+            session.setAttribute("userRole", String.valueOf(user.getRole_id()));
+            
+            // Set cookie expiry based on remember me checkbox
+            int cookieAge = "on".equals(remember) ? 60 * 60 * 24 * 30 : -1; // 30 days or session only
+            CookiesUtil.addCookie(response, "userRole", String.valueOf(user.getRole_id()), cookieAge);
+            CookiesUtil.addCookie(response, "userEmail", user.getUser_email(), cookieAge);
+
+            // Add success message to session
+            session.setAttribute("success", "Login Successful!");
+
+            // Redirect based on role
+            String contextPath = request.getContextPath();
+            if (user.getRole_id() == 1) { // Admin
+                response.sendRedirect(contextPath + "/dashboard");
+            } else if (user.getRole_id() == 2) { // Customer 
+                response.sendRedirect(contextPath + "/portfolio");
+            } else {
+                response.sendRedirect(contextPath + "/welcome");
+            }
+        } else {
+            handleError(request, response, "User not found. Please register your account first.");
+        }
+    }
+
+    private void handleError(HttpServletRequest request, HttpServletResponse response, String message) 
+            throws ServletException, IOException {
+        request.setAttribute("error", message);
+        request.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(request, response);
+    }
+}
 
 
