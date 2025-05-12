@@ -54,6 +54,19 @@ public class ValidationUtil {
         return password != null && password.matches(passwordRegex);
     }
 
+    // Add these new methods to ValidationUtil class
+    public static boolean hasMinimumLength(String password) {
+        return password != null && password.length() >= 8;
+    }
+
+    public static boolean hasSpecialCharacter(String password) {
+        return password != null && password.matches(".*[@!#$%&].*");
+    }
+
+    public static boolean hasUpperCase(String password) {
+        return password != null && password.matches(".*[A-Z].*");
+    }
+
     // 8. Validate if a Part's file extension matches with image extensions (jpg, jpeg, png, gif)
     public static boolean isValidImageExtension(Part imagePart) {
         if (imagePart == null || isNullOrEmpty(imagePart.getSubmittedFileName())) {

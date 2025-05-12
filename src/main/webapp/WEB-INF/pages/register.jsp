@@ -32,6 +32,46 @@
 	</script>
 </c:if>
 
+<script>
+function validatePassword() {
+    var password = document.getElementById('password').value;
+    
+    if(password.length < 8) {
+        Swal.fire("Error", "Please enter password with minimum 8 characters.", "error");
+        return false;
+    }
+    
+    if(!/[@!#$%&]/.test(password)) {
+        Swal.fire("Error", "Password must contain atleast one character like (@,!,#,$,%,&).", "error");
+        return false;
+    }
+    
+    if(!/[A-Z]/.test(password)) {
+        Swal.fire("Error", "Password must contain atleast one Uppercase letter.", "error");
+        return false;
+    }
+    
+    return true;
+}
+
+function validateEmail(email) {
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return emailRegex.test(email);
+}
+
+// Add this to the form validation
+document.querySelector('form').onsubmit = function(e) {
+    const email = document.getElementById('email').value;
+    
+    if (!validateEmail(email)) {
+        Swal.fire("Error", "Please enter a valid email address.", "error");
+        return false;
+    }
+    
+    return validatePassword(); // Keep existing password validation
+};
+</script>
+
 <body>
 	<div class="container">
 		<h1>Register to Aurora</h1>
@@ -49,7 +89,9 @@
 				<div class="col">
 				<!-- Email field -->
 					<label for="email">Email:</label> 
-					<input type="email" id="email" name="email" required>
+					<input type="email" id="email" name="email" value="${email}" required 
+						   pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" 
+						   title="Please enter a valid email address">
 				</div>
 			</div>
 

@@ -76,12 +76,27 @@ public class RegisterController extends HttpServlet {
         }
         
         if (ValidationUtil.isNullOrEmpty(userEmail) || !ValidationUtil.isValidEmail(userEmail)) {
-            handleError(request, response, "Valid email is required");
+            handleError(request, response, "Please enter a valid email address.");
             return;
         }
         
         if (!ValidationUtil.doPasswordsMatch(password, retypePassword)) {
             handleError(request, response, "Passwords do not match");
+            return;
+        }
+
+        if (!ValidationUtil.hasMinimumLength(password)) {
+            handleError(request, response, "Please enter password with minimum 8 characters.");
+            return;
+        }
+
+        if (!ValidationUtil.hasSpecialCharacter(password)) {
+            handleError(request, response, "Password must contain atleast one character like (@,!,#,$,%,&).");
+            return;
+        }
+
+        if (!ValidationUtil.hasUpperCase(password)) {
+            handleError(request, response, "Password must contain atleast one Uppercase letter.");
             return;
         }
         
