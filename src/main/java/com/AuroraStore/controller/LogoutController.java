@@ -7,28 +7,31 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Servlet implementation class LogoutController
- */
+import com.AuroraStore.util.CookiesUtil;
+import com.AuroraStore.util.SessionUtil;
+
 @WebServlet(asyncSupported = true, urlPatterns = { "/logout" })
 public class LogoutController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
        
-  
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
-	}
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        // Delete all cookies
+        CookiesUtil.deleteCookie(response, "userRole");
+        CookiesUtil.deleteCookie(response, "userEmail");
+        
+        // Invalidate the session
+        SessionUtil.invalidateSession(request);
+        
+        // Add success message
+        request.getSession().setAttribute("success", "Successfully logged out!");
+        
+        // Redirect to welcome page
+        response.sendRedirect(request.getContextPath() + "/welcome");
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        doGet(request, response);
+    }
 }
