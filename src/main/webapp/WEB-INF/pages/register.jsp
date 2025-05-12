@@ -105,7 +105,6 @@ document.querySelector('form').onsubmit = function(e) {
 					<label for="usertype">User Type: </label> 
 					<select id="usertype" name="usertype" required>
 						<option value="" disabled selected>Select role</option>
-						<option value="1">Admin</option>
 						<option value="2">Customer</option>
 					</select>
 				</div>
