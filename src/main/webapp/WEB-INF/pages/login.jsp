@@ -26,20 +26,38 @@
         </script>
     </c:if>
 
+    <!-- Add error message popup -->
+    <c:if test="${not empty error}">
+        <script>
+            $(document).ready(function() {
+                Swal.fire({
+                    title: "Error",
+                    text: "${error}",
+                    icon: "error"
+                });
+            });
+        </script>
+    </c:if>
+
     <div class="login-box">
         <h2>Login to Aurora Store</h2>
-        <form action="">
+        <form action="${pageContext.request.contextPath}/login" method="post">
             <div class="row">
                 <div class="col">
-                    <label for="username">Username:</label> <input type="text"
-                        id="username" name="username" required>
+                    <label for="email">Email:</label> 
+                    <input type="email" id="email" name="email" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <label for="password">Password:</label> <input type="password"
-                        id="password" name="password" required>
+                    <label for="password">Password:</label> 
+                    <input type="password" id="password" name="password" required>
                 </div>
+            </div>
+            <!-- Add Remember Me checkbox -->
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember Me</label>
             </div>
             <button type="submit" class="login-button">Login</button>
         </form>
