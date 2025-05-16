@@ -176,6 +176,74 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sortDateBtn = document.querySelector('.sort-btn[title="Sort by Created Date"]');
+            
+            if (sortDateBtn) {
+                sortDateBtn.addEventListener('click', function() {
+                    // Add loading state
+                    sortDateBtn.classList.add('active');
+                    sortDateBtn.disabled = true;
+                    
+                    fetch('${pageContext.request.contextPath}/sortUsersByDate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(users => {
+                        const tbody = document.querySelector('#usersTable tbody');
+                        tbody.innerHTML = ''; // Clear existing rows
+                        
+                        users.forEach(user => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${user.user_id}</td>
+                                <td>${user.user_name}</td>
+                                <td>${user.user_email}</td>
+                                <td>${user.contact_number}</td>
+                                <td>${user.created_at}</td>
+                                <td>${user.role_id}</td>
+                                <td>${user.role_type}</td>
+                                <td><button class="delete-btn">Delete</button></td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                        
+                        // Show success message
+                        Swal.fire({
+                            title: "Success",
+                            text: "Users sorted by newest first",
+                            icon: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: "Error",
+                            text: "Failed to sort users: " + error.message,
+                            icon: "error"
+                        });
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        sortDateBtn.classList.remove('active');
+                        sortDateBtn.disabled = false;
+                    });
+                });
+            }
+        });
+    </script>
+
     <c:if test="${not empty success}">
         <script>
             Swal.fire("Success", "${success}", "success");

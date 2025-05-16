@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DashboardService {
@@ -27,10 +28,11 @@ public class DashboardService {
             dbConn = DbConfig.getDbConnection();
             System.out.println("Connected to database successfully for users query");
             
-            String query = "SELECT u.user_id, u.user_name, u.user_email, u.contact_number, u.created_at, " +
-                          "u.role_id, r.role_type FROM users u " +
-                          "JOIN user_roles r ON u.role_id = r.role_id " +
-                          "ORDER BY u.user_id";
+            String query = "SELECT u.user_id, u.user_name, u.user_email, u.contact_number, " +
+                           "DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i:%s') as created_at, " +
+                           "u.role_id, r.role_type FROM users u " +
+                           "JOIN user_roles r ON u.role_id = r.role_id " +
+                           "ORDER BY u.created_at DESC";
             
             stmt = dbConn.prepareStatement(query);
             rs = stmt.executeQuery();
@@ -244,5 +246,31 @@ public class DashboardService {
         }
         
         return totalValue;
+    }
+    
+    /**
+     * Sorts a list of users by their created date in descending order
+     * @param users List of UsersModel objects
+     * @return Sorted list of UsersModel objects
+     */
+    public List<UsersModel> sortUsersByCreatedDate(List<UsersModel> users) {
+        int n = users.size();
+        UsersModel[] arr = users.toArray(new UsersModel[n]);
+        
+        // Insertion sort (newest first)
+        for (int i = 1; i < n; i++) {
+            UsersModel key = arr[i];
+            String keyDate = key.getCreated_at();
+            int j = i - 1;
+            
+            // Change comparison direction to > for descending order (newest first)
+            while (j >= 0 && arr[j].getCreated_at().compareTo(keyDate) < 0) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
+        
+        return Arrays.asList(arr);
     }
 }

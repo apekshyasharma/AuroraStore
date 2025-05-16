@@ -17,7 +17,7 @@ import com.AuroraStore.service.DashboardService;
 /**
  * Servlet implementation class DashboardController
  */
-@WebServlet(asyncSupported = true, urlPatterns = { "/dashboard" })
+@WebServlet(asyncSupported = true, urlPatterns = { "/dashboard", "/sortUsersByDate" })
 public class DashboardController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private DashboardService dashboardService;
@@ -105,6 +105,55 @@ public class DashboardController extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+        String action = request.getServletPath();
+        
+        if ("/sortUsersByDate".equals(action)) {
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("currentUser") != null) {
+                UsersModel currentUser = (UsersModel) session.getAttribute("currentUser");
+                
+                if (currentUser.getRole_id() != 1) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+                
+                try {
+                    List<UsersModel> usersList = dashboardService.getAllUsers();
+                    usersList = dashboardService.sortUsersByCreatedDate(usersList);
+                    
+                    // Convert to JSON and send response
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    
+                    StringBuilder json = new StringBuilder("[");
+                    for (int i = 0; i < usersList.size(); i++) {
+                        UsersModel user = usersList.get(i);
+                        json.append("{")
+                            .append("\"user_id\":\"").append(user.getUser_id()).append("\",")
+                            .append("\"user_name\":\"").append(user.getUser_name()).append("\",")
+                            .append("\"user_email\":\"").append(user.getUser_email()).append("\",")
+                            .append("\"contact_number\":\"").append(user.getContact_number()).append("\",")
+                            .append("\"created_at\":\"").append(user.getCreated_at()).append("\",")
+                            .append("\"role_id\":\"").append(user.getRole_id()).append("\",")
+                            .append("\"role_type\":\"").append(user.getImage()).append("\"")
+                            .append("}");
+                        
+                        if (i < usersList.size() - 1) {
+                            json.append(",");
+                        }
+                    }
+                    json.append("]");
+                    
+                    response.getWriter().write(json.toString());
+                } catch (Exception e) {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    e.printStackTrace();
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        } else {
+            doGet(request, response);
+        }
     }
 }

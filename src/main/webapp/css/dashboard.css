@@ -196,10 +196,56 @@ body {
 .sort-btn {
     background-color: var(--secondary-color);
     color: var(--text-primary);
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    margin-left: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
 }
 
 .sort-btn:hover {
     background-color: #81d4fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.sort-btn:active {
+    transform: translateY(0);
+    background-color: #4fc3f7;
+}
+
+.sort-btn i {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+.sort-btn.active {
+    background-color: #4fc3f7;
+    color: white;
+    transform: translateY(0);
+}
+
+.sort-btn.active:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sort-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.sort-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.3);
 }
 
 .filter-options, .action-buttons {
