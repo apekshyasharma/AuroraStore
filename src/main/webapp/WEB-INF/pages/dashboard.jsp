@@ -66,14 +66,6 @@
         <div class="section user-section">
             <div class="section-header">
                 <h2><i class="fas fa-user-friends"></i> All Users</h2>
-                <div class="filter-options">
-                    <button class="sort-btn" title="Sort by Created Date">
-                        <i class="fas fa-calendar"></i> Sort by Date
-                    </button>
-                    <button class="sort-btn" title="Sort by User Roles">
-                        <i class="fas fa-user-tag"></i> Sort by Role
-                    </button>
-                </div>
             </div>
             
             <div class="table-container">
@@ -120,9 +112,6 @@
                 <div class="action-buttons">
                     <button class="add-btn">
                         <i class="fas fa-plus"></i> Add Product
-                    </button>
-                    <button class="sort-btn" title="Sort by Quantity">
-                        <i class="fas fa-sort-amount-down"></i> Sort by Quantity
                     </button>
                 </div>
             </div>
@@ -173,74 +162,6 @@
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sortDateBtn = document.querySelector('.sort-btn[title="Sort by Created Date"]');
-            
-            if (sortDateBtn) {
-                sortDateBtn.addEventListener('click', function() {
-                    // Add loading state
-                    sortDateBtn.classList.add('active');
-                    sortDateBtn.disabled = true;
-                    
-                    fetch('${pageContext.request.contextPath}/sortUsersByDate', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(users => {
-                        const tbody = document.querySelector('#usersTable tbody');
-                        tbody.innerHTML = ''; // Clear existing rows
-                        
-                        users.forEach(user => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${user.user_id}</td>
-                                <td>${user.user_name}</td>
-                                <td>${user.user_email}</td>
-                                <td>${user.contact_number}</td>
-                                <td>${user.created_at}</td>
-                                <td>${user.role_id}</td>
-                                <td>${user.role_type}</td>
-                                <td><button class="delete-btn">Delete</button></td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                        
-                        // Show success message
-                        Swal.fire({
-                            title: "Success",
-                            text: "Users sorted by newest first",
-                            icon: "success",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            title: "Error",
-                            text: "Failed to sort users: " + error.message,
-                            icon: "error"
-                        });
-                    })
-                    .finally(() => {
-                        // Reset button state
-                        sortDateBtn.classList.remove('active');
-                        sortDateBtn.disabled = false;
-                    });
-                });
-            }
         });
     </script>
 
