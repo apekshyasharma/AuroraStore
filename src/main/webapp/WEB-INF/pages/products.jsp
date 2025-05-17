@@ -17,8 +17,16 @@
     
     <div class="container">
         <div class="products-header">
-            <h1>Discover Our Products</h1>
-            <p>Explore our collection of high-quality stationery and office supplies for all your needs.</p>
+            <c:choose>
+                <c:when test="${not empty selectedCategory}">
+                    <h1>${selectedCategory} Products</h1>
+                    <p>Explore our collection of high-quality ${selectedCategory} stationery and office supplies.</p>
+                </c:when>
+                <c:otherwise>
+                    <h1>Discover Our Products</h1>
+                    <p>Explore our collection of high-quality stationery and office supplies for all your needs.</p>
+                </c:otherwise>
+            </c:choose>
         </div>
         
         <c:choose>

@@ -37,13 +37,26 @@ public class ProductsController extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            // Get all active products
-            List<ProductsModel> productsList = productsService.getAllActiveProducts();
+            String categoryName = request.getParameter("category");
+            List<ProductsModel> productsList;
+
+            // Debug statement to check what category is being received
+            System.out.println("Requested category: " + categoryName);
+
+            if (categoryName != null && !categoryName.trim().isEmpty()) {
+                // URL decoding to handle spaces properly
+                categoryName = java.net.URLDecoder.decode(categoryName, "UTF-8");
+                productsList = productsService.getProductsByCategory(categoryName);
+                
+                // Debug statement to check products count
+                System.out.println("Found " + productsList.size() + " products for category: " + categoryName);
+            } else {
+                productsList = productsService.getAllActiveProducts();
+            }
             
-            // Set data for the view
             request.setAttribute("productsList", productsList);
+            request.setAttribute("selectedCategory", categoryName); // To highlight active category
             
-            // Forward to the products page
             request.getRequestDispatcher("/WEB-INF/pages/products.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("Error in ProductsController.doGet: " + e.getMessage());
