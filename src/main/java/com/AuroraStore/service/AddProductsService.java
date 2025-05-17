@@ -98,6 +98,14 @@ public class AddProductsService {
         
         try {
             dbConn = DbConfig.getDbConnection();
+            if (dbConn == null) {
+                System.err.println("Database connection is null");
+                return -1;
+            }
+            
+            // Print debug info
+            System.out.println("Attempting to add product: " + product.getProduct_name());
+            System.out.println("Image name: " + imageName);
             
             String query = "INSERT INTO products (product_name, image, product_price, product_description, " +
                            "product_quantity, product_status, category_id, brand_id) " +
@@ -105,7 +113,14 @@ public class AddProductsService {
             
             stmt = dbConn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, product.getProduct_name());
-            stmt.setString(2, imageName); // Can be null
+            
+            // Handle image name (can be null)
+            if (imageName == null || imageName.trim().isEmpty()) {
+                stmt.setNull(2, java.sql.Types.VARCHAR);
+            } else {
+                stmt.setString(2, imageName);
+            }
+            
             stmt.setDouble(3, product.getProduct_price());
             stmt.setString(4, product.getProduct_description());
             stmt.setInt(5, product.getProduct_quantity());
@@ -113,22 +128,66 @@ public class AddProductsService {
             stmt.setInt(7, product.getCategory_id());
             stmt.setInt(8, product.getBrand_id());
             
+            // Print SQL debug
+            System.out.println("Executing SQL: " + query);
+            System.out.println("With values: name=" + product.getProduct_name() + 
+                              ", image=" + imageName + 
+                              ", price=" + product.getProduct_price() + 
+                              ", desc=" + product.getProduct_description() + 
+                              ", qty=" + product.getProduct_quantity() + 
+                              ", status=" + product.getProduct_status() + 
+                              ", catId=" + product.getCategory_id() + 
+                              ", brandId=" + product.getBrand_id());
+            
             int rowsAffected = stmt.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected);
             
             if (rowsAffected > 0) {
                 rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     newProductId = rs.getInt(1);
+                    System.out.println("New product ID: " + newProductId);
+                } else {
+                    System.out.println("No generated keys returned");
                 }
+            } else {
+                System.out.println("No rows affected by insert");
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Error adding product: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("SQL Error adding product: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            System.err.println("Class not found adding product: " + e.getMessage());
             e.printStackTrace();
         } finally {
             closeResources(rs, stmt, dbConn);
         }
         
         return newProductId;
+    }
+    
+    /**
+     * Tests the database connection
+     * @return true if the connection is successful, false otherwise
+     */
+    public boolean testDatabaseConnection() {
+        Connection dbConn = null;
+        try {
+            dbConn = DbConfig.getDbConnection();
+            return dbConn != null;
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Database connection test failed: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (dbConn != null) {
+                try {
+                    dbConn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
+            }
+        }
     }
     
     /**

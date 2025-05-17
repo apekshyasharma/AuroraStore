@@ -77,16 +77,16 @@
                 <div class="form-group full-width">
                     <label for="productImage">Product Image</label>
                     <div class="image-upload-container">
-                        <div class="image-preview" id="imagePreview">
+                        <div id="imagePreview" class="image-preview">
                             <i class="fas fa-image"></i>
                             <p>No image selected</p>
                         </div>
                         <div class="image-upload-controls">
-                            <input type="file" id="productImage" name="productImage" accept="image/*" onchange="previewImage(this)">
+                            <input type="file" id="productImage" name="productImage" accept="image/*" onchange="previewImage(this)" style="display: none;">
                             <label for="productImage" class="custom-file-upload">
                                 <i class="fas fa-upload"></i> Choose Image
                             </label>
-                            <small>Supported formats: JPG, JPEG, PNG, GIF (Max: 5MB)</small>
+                            <small>Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG, GIF</small>
                         </div>
                     </div>
                 </div>

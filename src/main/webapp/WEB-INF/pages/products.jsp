@@ -1,94 +1,81 @@
- <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products - AuroraStore</title>
-    
-    <!-- Stylesheets -->
+    <title>Our Products - Aurora Store</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/products.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
-<div class="page-container">
-
     <%@ include file="header.jsp" %>
-
-    <main class="main-content">
-        <section class="products-section">
-            <h2 class="section-title">Our Stationery Products Collection</h2>
-            <div class="products-grid">
-                <!-- Product 1 -->
-                <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/resources/images/system/notebook.png" 
-                         alt="Premium Notebook Set"
-                         onerror="this.src='https://via.placeholder.com/300x300?text=Notebook+Set'">
-                    <h3 class="product-title">NoTes Notebook Set</h3>
-                    <p class="product-price">Rs.250</p>
-                    <button class="product-button">Add to Cart</button>
+    
+    <div class="container">
+        <div class="products-header">
+            <h1>Discover Our Products</h1>
+            <p>Explore our collection of high-quality stationery and office supplies for all your needs.</p>
+        </div>
+        
+        <c:choose>
+            <c:when test="${empty productsList}">
+                <div class="no-products">
+                    <i class="fas fa-box-open fa-3x"></i>
+                    <p>No products available at the moment.</p>
                 </div>
-
-                <!-- Product 2 -->
-                <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/resources/images/system/pens.png" 
-                         alt="Luxury Pen Set"
-                         onerror="this.src='https://via.placeholder.com/300x300?text=Luxury+Pens'">
-                    <h3 class="product-title">INK Pen Collection</h3>
-                    <p class="product-price">Rs.50</p>
-                    <button class="product-button">Add to Cart</button>
+            </c:when>
+            <c:otherwise>
+                <div class="products-grid">
+                    <c:forEach items="${productsList}" var="product">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <c:choose>
+                                    <c:when test="${not empty product.image}">
+                                        <img src="${pageContext.request.contextPath}/resources/images/products/${product.image}" 
+                                             alt="${product.product_name}"
+                                             onerror="this.src='${pageContext.request.contextPath}/resources/images/system/placeholder.png'">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img src="${pageContext.request.contextPath}/resources/images/system/placeholder.png" 
+                                             alt="Product Image Placeholder">
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">${product.product_name}</h3>
+                                <div class="product-price">Rs. <fmt:formatNumber value="${product.product_price}" type="number" pattern="#,##0.00" /></div>
+                                <p class="product-description">${product.product_description}</p>
+                                <div class="product-meta">
+                                    <span class="product-category">${product.category_name}</span>
+                                    <span class="product-brand">${product.brand_name}</span>
+                                </div>
+                                <div class="product-actions">
+                                    <a href="${pageContext.request.contextPath}/product-details?id=${product.product_id}" class="view-details">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                    <button class="add-to-cart" onclick="addToCart(${product.product_id})">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
                 </div>
-
-                <!-- Product 3 -->
-                <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/resources/images/system//artsupply.png" 
-                         alt="Art Supplies Kit"
-                         onerror="this.src='https://via.placeholder.com/300x300?text=Art+Kit'">
-                    <h3 class="product-title">Artistic Art Supplies</h3>
-                    <p class="product-price">Rs.500</p>
-                    <button class="product-button">Add to Cart</button>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/resources/images/system/organiser.png" 
-                         alt="Desk Organizer"
-                         onerror="this.src='https://via.placeholder.com/300x300?text=Desk+Organizer'">
-                    <h3 class="product-title">Ikea Desk Organizer</h3>
-                    <p class="product-price">Rs.5000</p>
-                    <button class="product-button">Add to Cart</button>
-                </div>
-
-                <!-- Product 5 -->
-                <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/resources/images/system/leatherplanner.png" 
-                         alt="Leather Planner"
-                         onerror="this.src='https://via.placeholder.com/300x300?text=Leather+Planner'">
-                    <h3 class="product-title">Luxeria Leather Planner</h3>
-                    <p class="product-price">Rs.1600</p>
-                    <button class="product-button">Add to Cart</button>
-                </div>
-
-                <!-- Product 6 -->
-                <div class="product-card">
-                    <img src="${pageContext.request.contextPath}/resources/images/system/storage.jpg" 
-                         alt="Decorative Storage Box"
-                         onerror="this.src='https://via.placeholder.com/300x300?text=Storage+Box'">
-                    <h3 class="product-title">Decorative Storage Box</h3>
-                    <p class="product-price">Rs.1050</p>
-                    <button class="product-button">Add to Cart</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
+            </c:otherwise>
+        </c:choose>
+    </div>
+    
     <%@ include file="footer.jsp" %>
-
-</div>
-
+    
+    <script>
+        function addToCart(productId) {
+            // This function can be implemented later for cart functionality
+            alert('Product added to cart!');
+        }
+    </script>
 </body>
 </html>

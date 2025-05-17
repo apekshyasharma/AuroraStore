@@ -57,9 +57,12 @@ public class ImagesUtil {
     public boolean uploadProductImage(Part part, String rootPath) {
         String savePath = getProductSavePath();
         File fileSaveDir = new File(savePath);
+        
+        System.out.println("Product image save path: " + savePath);
 
         if (!fileSaveDir.exists()) {
             if (!fileSaveDir.mkdirs()) {
+                System.err.println("Failed to create directory: " + savePath);
                 return false;
             }
         }
@@ -67,9 +70,21 @@ public class ImagesUtil {
         try {
             String imageName = getImageNameFromPart(part);
             String filePath = savePath + File.separator + imageName;
+            System.out.println("Writing file to: " + filePath);
+            
             part.write(filePath);
-            return true;
+            
+            // Verify file was written
+            File uploadedFile = new File(filePath);
+            if (uploadedFile.exists()) {
+                System.out.println("File successfully written, size: " + uploadedFile.length());
+                return true;
+            } else {
+                System.err.println("File not found after write operation");
+                return false;
+            }
         } catch (IOException e) {
+            System.err.println("IO Error uploading image: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -83,9 +98,22 @@ public class ImagesUtil {
     }
     
     /**
-     * Gets the save path for uploaded product images
+     * Gets the save path for uploaded product images and ensures directory exists
      */
     public String getProductSavePath() {
-        return "C:/Users/ghimi/OneDrive/Documents/DSA/AuroraStore/src/main/webapp/resources/images/products/";
+        String path = "C:/Users/ghimi/OneDrive/Documents/DSA/AuroraStore/src/main/webapp/resources/images/products/";
+        
+        // Ensure directory exists
+        File dir = new File(path);
+        if (!dir.exists()) {
+            boolean created = dir.mkdirs();
+            if (created) {
+                System.out.println("Created product images directory: " + path);
+            } else {
+                System.err.println("Failed to create product images directory: " + path);
+            }
+        }
+        
+        return path;
     }
 }

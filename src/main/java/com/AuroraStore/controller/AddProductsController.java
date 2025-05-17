@@ -97,27 +97,35 @@ public class AddProductsController extends HttpServlet {
         
         UsersModel currentUser = (UsersModel) session.getAttribute("currentUser");
         if (currentUser.getRole_id() != 1) {
-            session.setAttribute("error", "You don't have permission to access this page");
             response.sendRedirect(request.getContextPath() + "/welcome");
             return;
         }
         
         try {
-            // Extract form data
+            // Get form parameters
             String productName = request.getParameter("productName");
             String priceStr = request.getParameter("productPrice");
             String quantityStr = request.getParameter("productQuantity");
-            String description = request.getParameter("productDescription");
-            String status = request.getParameter("productStatus");
+            String productDescription = request.getParameter("productDescription");
+            String productStatus = request.getParameter("productStatus");
             String categoryIdStr = request.getParameter("categoryId");
             String brandIdStr = request.getParameter("brandId");
             
-            // Validate input
+            // Set form values as request attributes for form repopulation in case of error
+            request.setAttribute("productName", productName);
+            request.setAttribute("productPrice", priceStr);
+            request.setAttribute("productQuantity", quantityStr);
+            request.setAttribute("productDescription", productDescription);
+            request.setAttribute("productStatus", productStatus);
+            request.setAttribute("selectedCategoryId", categoryIdStr);
+            request.setAttribute("selectedBrandId", brandIdStr);
+            
+            // Validate required fields
             if (ValidationUtil.isNullOrEmpty(productName) || 
                 ValidationUtil.isNullOrEmpty(priceStr) || 
                 ValidationUtil.isNullOrEmpty(quantityStr) || 
-                ValidationUtil.isNullOrEmpty(description) || 
-                ValidationUtil.isNullOrEmpty(status) || 
+                ValidationUtil.isNullOrEmpty(productDescription) || 
+                ValidationUtil.isNullOrEmpty(productStatus) || 
                 ValidationUtil.isNullOrEmpty(categoryIdStr) || 
                 ValidationUtil.isNullOrEmpty(brandIdStr)) {
                 
@@ -149,6 +157,7 @@ public class AddProductsController extends HttpServlet {
             String imageName = null;
             
             if (filePart != null && filePart.getSize() > 0) {
+                System.out.println("File part size: " + filePart.getSize());
                 if (!ValidationUtil.isValidImageExtension(filePart)) {
                     handleError(request, response, "Invalid image format. Only jpg, jpeg, png, and gif allowed.");
                     return;
@@ -156,27 +165,34 @@ public class AddProductsController extends HttpServlet {
                 
                 // Get filename from the Part
                 imageName = imageUtil.getImageNameFromPart(filePart);
+                System.out.println("Image name extracted: " + imageName);
             }
             
-            // Create product model
+            // Create product object
             ProductsModel product = new ProductsModel();
             product.setProduct_name(productName);
             product.setProduct_price(price);
-            product.setProduct_description(description);
             product.setProduct_quantity(quantity);
-            product.setProduct_status(status);
+            product.setProduct_description(productDescription);
+            product.setProduct_status(productStatus);
             product.setCategory_id(categoryId);
             product.setBrand_id(brandId);
             
-            // Save product to database
+            // Add product to database
+            System.out.println("Adding product to database: " + product.getProduct_name());
             int productId = addProductsService.addProduct(product, imageName);
+            System.out.println("Product ID returned: " + productId);
             
             if (productId > 0) {
                 // If file exists, save it
                 if (filePart != null && filePart.getSize() > 0) {
-                    if (!imageUtil.uploadProductImage(filePart, request.getServletContext().getRealPath("/"))) {
-                        handleError(request, response, "Failed to upload product image");
-                        return;
+                    System.out.println("Uploading image for product ID: " + productId);
+                    boolean uploadSuccess = imageUtil.uploadProductImage(filePart, request.getServletContext().getRealPath("/"));
+                    System.out.println("Image upload success: " + uploadSuccess);
+                    
+                    if (!uploadSuccess) {
+                        // Continue even if image upload fails - product is already in DB
+                        System.err.println("Image upload failed, but product was added to database");
                     }
                 }
                 
@@ -184,12 +200,13 @@ public class AddProductsController extends HttpServlet {
                 session.setAttribute("success", "Product added successfully!");
                 response.sendRedirect(request.getContextPath() + "/dashboard");
             } else {
-                handleError(request, response, "Failed to add product");
+                System.out.println("Product ID is negative or zero: " + productId);
+                handleError(request, response, "Failed to add product to database. Check database connection.");
             }
         } catch (Exception e) {
             System.err.println("Error in AddProductsController.doPost: " + e.getMessage());
             e.printStackTrace();
-            handleError(request, response, "Error adding product: " + e.getMessage());
+            handleError(request, response, "An unexpected error occurred: " + e.getMessage());
         }
     }
     
