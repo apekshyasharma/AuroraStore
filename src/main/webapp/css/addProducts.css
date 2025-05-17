@@ -1,0 +1,301 @@
+@charset "UTF-8";
+
+:root {
+    --primary-color: #ff80ab;
+    --secondary-color: #b3e5fc;
+    --accent-color: #ffecb3;
+    --pastel-pink: #ffd1dc;
+    --pastel-blue: #d1e9ff;
+    --pastel-yellow: #ffffd1;
+    --pastel-purple: #e1d1ff;
+    --pastel-green: #d1ffdd;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --border-color: #e0e0e0;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --error-color: #ff6b6b;
+}
+
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.add-product-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-section h1 {
+    color: var(--primary-color);
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.header-section p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin: 0;
+}
+
+.header-section h1 i {
+    margin-right: 10px;
+}
+
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    width: 100%;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.required {
+    color: var(--error-color);
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: var(--pastel-blue);
+    color: var(--text-primary);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 128, 171, 0.15);
+    background-color: white;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    background-color: var(--pastel-yellow);
+}
+
+.image-upload-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    background-color: var(--pastel-pink);
+    overflow: hidden;
+}
+
+.image-preview i {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-upload-controls {
+    flex: 1;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    background-color: var(--pastel-purple);
+    color: var(--text-primary);
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.custom-file-upload:hover {
+    background-color: #d1c1ff;
+}
+
+.custom-file-upload i {
+    margin-right: 8px;
+}
+
+small {
+    display: block;
+    color: var(--text-secondary);
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.cancel-btn,
+.submit-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-btn {
+    background-color: #e0e0e0;
+    color: var(--text-primary);
+    border: none;
+}
+
+.cancel-btn:hover {
+    background-color: #d0d0d0;
+}
+
+.submit-btn {
+    background-color: var(--pastel-green);
+    color: var(--text-primary);
+    border: none;
+}
+
+.submit-btn:hover {
+    background-color: #b1ecc6;
+}
+
+.cancel-btn i,
+.submit-btn i {
+    margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .image-upload-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .image-preview {
+        width: 100%;
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-product-container {
+        padding: 20px;
+    }
+    
+    .header-section h1 {
+        font-size: 24px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .cancel-btn, .submit-btn {
+        width: 100%;
+    }
+}
+
+/* Input field colors */
+input[type="text"] {
+    background-color: var(--pastel-blue);
+}
+
+input[type="number"] {
+    background-color: var(--pastel-yellow);
+}
+
+select {
+    background-color: var(--pastel-purple);
+}
+
+/* Error state */
+.error-field {
+    border-color: var(--error-color) !important;
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 5px;
+}

@@ -162,6 +162,14 @@
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Add event listener to "Add Product" button
+            const addProductBtn = document.querySelector('.add-btn');
+            if (addProductBtn) {
+                addProductBtn.addEventListener('click', function() {
+                    window.location.href = '${pageContext.request.contextPath}/addproducts';
+                });
+            }
         });
     </script>
 
