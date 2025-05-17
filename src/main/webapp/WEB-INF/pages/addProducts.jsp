@@ -86,7 +86,7 @@
                             <label for="productImage" class="custom-file-upload">
                                 <i class="fas fa-upload"></i> Choose Image
                             </label>
-                            <small>Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG, GIF</small>
+                            <small>Maximum file size: 10MB. Supported formats: JPG, JPEG, PNG, GIF</small> <%-- Updated to 10MB --%>
                         </div>
                     </div>
                 </div>

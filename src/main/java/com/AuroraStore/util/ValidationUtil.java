@@ -94,19 +94,18 @@ public class ValidationUtil {
         return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".gif");
     }
 
-    // Add this method to the ValidationUtil class
-
     /**
      * Validates that an image file has an allowed extension and size
      */
     public static boolean isValidImageFile(Part filePart) {
         // Check if part exists and has content
         if (filePart == null || filePart.getSize() == 0) {
-            return true; // No file is valid (not required)
+            return true; // No file is valid (not required for this method's logic, could be handled elsewhere if required)
         }
         
-        // Check file size (max 5MB)
-        if (filePart.getSize() > 5 * 1024 * 1024) {
+        // Check file size (max 10MB)
+        if (filePart.getSize() > 10 * 1024 * 1024) { // Updated to 10MB
+            System.out.println("ValidationUtil: Image size exceeds 10MB. Size: " + filePart.getSize());
             return false;
         }
         
