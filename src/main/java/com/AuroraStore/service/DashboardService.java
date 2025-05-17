@@ -360,6 +360,38 @@ public class DashboardService {
     }
     
     /**
+     * Deletes a product from the database
+     * @param productId The ID of the product to delete
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteProduct(int productId) {
+        Connection dbConn = null;
+        PreparedStatement stmt = null;
+        boolean success = false;
+        
+        try {
+            dbConn = DbConfig.getDbConnection();
+            String query = "DELETE FROM products WHERE product_id = ?";
+            
+            stmt = dbConn.prepareStatement(query);
+            stmt.setInt(1, productId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            success = (rowsAffected > 0);
+            
+            System.out.println("Product deletion result: " + (success ? "Success" : "Failed") + 
+                              ", Rows affected: " + rowsAffected);
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error deleting product: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(null, stmt, dbConn);
+        }
+        
+        return success;
+    }
+    
+    /**
      * Checks if an email already exists in the database for a different user
      * @param email Email to check
      * @param userId User ID to exclude from the check

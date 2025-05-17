@@ -148,6 +148,12 @@
             <input type="hidden" name="action" value="delete">
         </form>
 
+        <!-- Add a hidden form for product delete action -->
+        <form id="deleteProductForm" method="post" action="${pageContext.request.contextPath}/dashboard" style="display:none;">
+            <input type="hidden" id="deleteProductId" name="productId">
+            <input type="hidden" name="action" value="deleteProduct">
+        </form>
+
     </div> <!-- closing user-section -->
 
     <!-- Visual divider between sections -->
@@ -195,7 +201,11 @@
                             <td>${product.product_status}</td>
                             <td>${product.category_name}</td>
                             <td>${product.brand_name}</td>
-                            <td><button class="delete-btn">Delete</button></td>
+                            <td>
+                                <button class="delete-btn" onclick="confirmDeleteProduct(${product.product_id}, '${product.product_name}')">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -259,6 +269,25 @@
                 if (result.isConfirmed) {
                     document.getElementById('deleteUserId').value = userId;
                     document.getElementById('deleteUserForm').submit();
+                }
+            });
+        }
+
+        // Confirm delete product
+        function confirmDeleteProduct(productId, productName) {
+            Swal.fire({
+                title: 'Delete Product',
+                text: `Are you sure you want to delete "${productName}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef9a9a',
+                cancelButtonColor: '#b0bec5',
+                confirmButtonText: 'Yes, Delete!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteProductId').value = productId;
+                    document.getElementById('deleteProductForm').submit();
                 }
             });
         }

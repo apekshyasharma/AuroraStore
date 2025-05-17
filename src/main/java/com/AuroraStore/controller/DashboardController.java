@@ -250,10 +250,30 @@ public class DashboardController extends HttpServlet {
                     } else {
                         session.setAttribute("error", "Failed to delete user.");
                     }
+                } else if (action.equals("deleteProduct")) {
+                    // Handle delete product action
+                    String productIdStr = request.getParameter("productId");
+                    
+                    if (ValidationUtil.isNullOrEmpty(productIdStr)) {
+                        session.setAttribute("error", "Product ID is required.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    int productId = Integer.parseInt(productIdStr);
+                    
+                    // Delete the product
+                    boolean deleted = dashboardService.deleteProduct(productId);
+                    
+                    if (deleted) {
+                        session.setAttribute("success", "Product deleted successfully.");
+                    } else {
+                        session.setAttribute("error", "Failed to delete product.");
+                    }
                 }
             } catch (NumberFormatException e) {
                 System.err.println("Invalid number format: " + e.getMessage());
-                session.setAttribute("error", "Invalid user ID.");
+                session.setAttribute("error", "Invalid ID format.");
             } catch (Exception e) {
                 System.err.println("Error processing request: " + e.getMessage());
                 e.printStackTrace();
