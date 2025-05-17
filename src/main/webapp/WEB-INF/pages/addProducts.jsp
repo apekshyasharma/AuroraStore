@@ -26,24 +26,24 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="productName">Product Name <span class="required">*</span></label>
-                        <input type="text" id="productName" name="productName" required>
+                        <input type="text" id="productName" name="productName" value="${productName}" required>
                     </div>
                     <div class="form-group">
                         <label for="productPrice">Price (Rs.) <span class="required">*</span></label>
-                        <input type="number" id="productPrice" name="productPrice" step="0.01" min="0" required>
+                        <input type="number" id="productPrice" name="productPrice" step="0.01" min="0" value="${productPrice}" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="productQuantity">Quantity <span class="required">*</span></label>
-                        <input type="number" id="productQuantity" name="productQuantity" min="1" required>
+                        <input type="number" id="productQuantity" name="productQuantity" min="1" value="${productQuantity}" required>
                     </div>
                     <div class="form-group">
                         <label for="productStatus">Status <span class="required">*</span></label>
                         <select id="productStatus" name="productStatus" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="active" ${productStatus == 'active' ? 'selected' : ''}>Active</option>
+                            <option value="inactive" ${productStatus == 'inactive' ? 'selected' : ''}>Inactive</option>
                         </select>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                         <select id="category" name="categoryId" required>
                             <option value="" disabled selected>Select Category</option>
                             <c:forEach items="${categories}" var="category">
-                                <option value="${category.category_id}">${category.category_name}</option>
+                                <option value="${category.category_id}" ${selectedCategoryId == category.category_id ? 'selected' : ''}>${category.category_name}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -63,7 +63,7 @@
                         <select id="brand" name="brandId" required>
                             <option value="" disabled selected>Select Brand</option>
                             <c:forEach items="${brands}" var="brand">
-                                <option value="${brand.brand_id}">${brand.brand_name}</option>
+                                <option value="${brand.brand_id}" ${selectedBrandId == brand.brand_id ? 'selected' : ''}>${brand.brand_name}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -71,7 +71,7 @@
                 
                 <div class="form-group full-width">
                     <label for="productDescription">Description <span class="required">*</span></label>
-                    <textarea id="productDescription" name="productDescription" rows="4" required></textarea>
+                    <textarea id="productDescription" name="productDescription" rows="4" required>${productDescription}</textarea>
                 </div>
                 
                 <div class="form-group full-width">

@@ -18,6 +18,7 @@ import com.AuroraStore.model.CategoriesModel;
 import com.AuroraStore.model.UsersModel;
 import com.AuroraStore.service.AddProductsService;
 import com.AuroraStore.util.ValidationUtil;
+import com.AuroraStore.util.ImagesUtil;
 
 /**
  * Servlet implementation class AddProducts
@@ -32,11 +33,13 @@ import com.AuroraStore.util.ValidationUtil;
 public class AddProductsController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private AddProductsService addProductsService;
+    private ImagesUtil imageUtil;
     
     @Override
     public void init() throws ServletException {
         super.init();
         this.addProductsService = new AddProductsService();
+        this.imageUtil = new ImagesUtil();
     }
        
     /**
@@ -152,7 +155,7 @@ public class AddProductsController extends HttpServlet {
                 }
                 
                 // Get filename from the Part
-                imageName = filePart.getSubmittedFileName();
+                imageName = imageUtil.getImageNameFromPart(filePart);
             }
             
             // Create product model
@@ -171,16 +174,10 @@ public class AddProductsController extends HttpServlet {
             if (productId > 0) {
                 // If file exists, save it
                 if (filePart != null && filePart.getSize() > 0) {
-                    String uploadDir = getServletContext().getRealPath("/resources/images/products/");
-                    
-                    // Ensure directory exists
-                    java.io.File uploadDirFile = new java.io.File(uploadDir);
-                    if (!uploadDirFile.exists()) {
-                        uploadDirFile.mkdirs();
+                    if (!imageUtil.uploadProductImage(filePart, request.getServletContext().getRealPath("/"))) {
+                        handleError(request, response, "Failed to upload product image");
+                        return;
                     }
-                    
-                    // Save the file
-                    filePart.write(uploadDir + java.io.File.separator + imageName);
                 }
                 
                 // Set success message and redirect

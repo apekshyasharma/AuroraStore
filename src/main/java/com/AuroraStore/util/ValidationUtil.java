@@ -69,8 +69,17 @@ public class ValidationUtil {
 
     // 8. Validate if a Part's file extension matches with image extensions (jpg, jpeg, png, gif)
     public static boolean isValidImageExtension(Part imagePart) {
-        if (imagePart == null || isNullOrEmpty(imagePart.getSubmittedFileName())) {
-            return false;
+        if (imagePart == null || imagePart.getSize() == 0 || isNullOrEmpty(imagePart.getSubmittedFileName())) {
+            return true; // No file or empty file is considered valid for optional image uploads
+        }
+        String fileName = imagePart.getSubmittedFileName().toLowerCase();
+        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".gif");
+    }
+    
+    // Alternative method for required image uploads
+    public static boolean isRequiredValidImageExtension(Part imagePart) {
+        if (imagePart == null || imagePart.getSize() == 0 || isNullOrEmpty(imagePart.getSubmittedFileName())) {
+            return false; // No file or empty file is considered invalid for required images
         }
         String fileName = imagePart.getSubmittedFileName().toLowerCase();
         return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".gif");

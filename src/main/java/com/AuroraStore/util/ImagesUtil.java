@@ -50,11 +50,42 @@ public class ImagesUtil {
             return false;
         }
     }
+    
+    /**
+     * Uploads the product image file to server
+     */
+    public boolean uploadProductImage(Part part, String rootPath) {
+        String savePath = getProductSavePath();
+        File fileSaveDir = new File(savePath);
+
+        if (!fileSaveDir.exists()) {
+            if (!fileSaveDir.mkdirs()) {
+                return false;
+            }
+        }
+
+        try {
+            String imageName = getImageNameFromPart(part);
+            String filePath = savePath + File.separator + imageName;
+            part.write(filePath);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     /**
-     * Gets the save path for uploaded images
+     * Gets the save path for uploaded user images
      */
     public String getSavePath() {
         return "C:/Users/ghimi/OneDrive/Documents/DSA/AuroraStore/src/main/webapp/resources/images/users/";
+    }
+    
+    /**
+     * Gets the save path for uploaded product images
+     */
+    public String getProductSavePath() {
+        return "C:/Users/ghimi/OneDrive/Documents/DSA/AuroraStore/src/main/webapp/resources/images/products/";
     }
 }
