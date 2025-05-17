@@ -119,6 +119,15 @@ public class RegisterController extends HttpServlet {
             return;
         }
         
+        // Create CustomerService instance
+        CustomerService service = new CustomerService();
+        
+        // Check if email already exists
+        if (service.emailExists(userEmail)) {
+            handleError(request, response, "Email address already registered. Please use a different email or login to your existing account.");
+            return;
+        }
+        
         // Create user model
         UsersModel user = new UsersModel();
         user.setUser_name(userName);
@@ -129,7 +138,6 @@ public class RegisterController extends HttpServlet {
         user.setImage(imagePath);
         
         // Register user
-        CustomerService service = new CustomerService();
         if (service.registerCustomer(user)) {
             // Upload image if provided
             if (imagePath != null) {
