@@ -49,6 +49,9 @@ public class RegisterController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
     
+        // First, clear any existing logout messages
+        request.getSession().removeAttribute("success");
+
         // Handle image upload using Part
         Part imagePart = request.getPart("image");
         String imagePath = null;
@@ -136,8 +139,8 @@ public class RegisterController extends HttpServlet {
                 }
             }
             
-            // Store success message in session before redirect
-            request.getSession().setAttribute("success", "Successful Registration"); // Updated message
+            // Then set our registration success message with a different attribute name
+            request.getSession().setAttribute("regSuccess", "Successful Registration");
             
             // Redirect to login page
             response.sendRedirect(request.getContextPath() + "/login");

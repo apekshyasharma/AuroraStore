@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <!-- Add success message popup -->
+    <!-- Keep existing success message popup for logout -->
     <c:if test="${not empty sessionScope.success}">
         <script>
             $(document).ready(function() {
@@ -22,6 +22,20 @@
                     icon: "success"
                 });
                 <% session.removeAttribute("success"); %>
+            });
+        </script>
+    </c:if>
+
+    <!-- Add registration success message popup -->
+    <c:if test="${not empty sessionScope.regSuccess}">
+        <script>
+            $(document).ready(function() {
+                Swal.fire({
+                    title: "Success",
+                    text: "${sessionScope.regSuccess}",
+                    icon: "success"
+                });
+                <% session.removeAttribute("regSuccess"); %>
             });
         </script>
     </c:if>

@@ -55,6 +55,6 @@ public class ImagesUtil {
      * Gets the save path for uploaded images
      */
     public String getSavePath() {
-        return "C:/Users/apekc/eclipse-workspace/AuroraStore/src/main/webapp/resources/images/users/";
+        return "C:/Users/ghimi/OneDrive/Documents/DSA/AuroraStore/src/main/webapp/resources/images/users/";
     }
 }
