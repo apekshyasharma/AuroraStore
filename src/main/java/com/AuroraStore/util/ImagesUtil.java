@@ -55,23 +55,56 @@ public class ImagesUtil {
      * Uploads the product image file to server
      */
     public boolean uploadProductImage(Part part, String rootPath) {
+        if (part == null || part.getSize() == 0) {
+            System.out.println("No image to upload - part is null or empty");
+            return false;
+        }
+        
         String savePath = getProductSavePath();
         File fileSaveDir = new File(savePath);
         
         System.out.println("Product image save path: " + savePath);
 
         if (!fileSaveDir.exists()) {
-            if (!fileSaveDir.mkdirs()) {
-                System.err.println("Failed to create directory: " + savePath);
-                return false;
+            boolean dirCreated = fileSaveDir.mkdirs();
+            System.out.println("Created directory: " + (dirCreated ? "Success" : "Failed"));
+            if (!dirCreated) {
+                // Try to create parent directories if needed
+                File parent = fileSaveDir.getParentFile();
+                if (parent != null && !parent.exists()) {
+                    boolean parentCreated = parent.mkdirs();
+                    System.out.println("Created parent directory: " + (parentCreated ? "Success" : "Failed"));
+                }
+                
+                // Try again
+                dirCreated = fileSaveDir.mkdir();
+                System.out.println("Second attempt to create directory: " + (dirCreated ? "Success" : "Failed"));
+                
+                if (!dirCreated) {
+                    System.err.println("Failed to create directory: " + savePath);
+                    return false;
+                }
             }
         }
 
         try {
             String imageName = getImageNameFromPart(part);
+            if (imageName == null || imageName.isEmpty()) {
+                System.err.println("Failed to get image name from part");
+                return false;
+            }
+            
             String filePath = savePath + File.separator + imageName;
             System.out.println("Writing file to: " + filePath);
             
+            // Ensure file is writable
+            File uploadFile = new File(filePath);
+            if (uploadFile.exists() && !uploadFile.canWrite()) {
+                System.err.println("Cannot write to existing file: " + filePath);
+                return false;
+            }
+            
+            // Write the file
             part.write(filePath);
             
             // Verify file was written
@@ -85,6 +118,10 @@ public class ImagesUtil {
             }
         } catch (IOException e) {
             System.err.println("IO Error uploading image: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            System.err.println("Unexpected error uploading image: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

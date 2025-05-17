@@ -94,6 +94,26 @@ public class ValidationUtil {
         return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".gif");
     }
 
+    // Add this method to the ValidationUtil class
+
+    /**
+     * Validates that an image file has an allowed extension and size
+     */
+    public static boolean isValidImageFile(Part filePart) {
+        // Check if part exists and has content
+        if (filePart == null || filePart.getSize() == 0) {
+            return true; // No file is valid (not required)
+        }
+        
+        // Check file size (max 5MB)
+        if (filePart.getSize() > 5 * 1024 * 1024) {
+            return false;
+        }
+        
+        // Check file extension
+        return isValidImageExtension(filePart);
+    }
+
     // 9. Validate if password and retype password match
     public static boolean doPasswordsMatch(String password, String retypePassword) {
         return password != null && password.equals(retypePassword);

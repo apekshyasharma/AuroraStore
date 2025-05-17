@@ -126,6 +126,21 @@
         }
     </script>
     
+    <!-- Add this script right after the form -->
+    <script>
+        // Verify form has proper enctype for file uploads
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.product-form');
+            if (form.enctype !== 'multipart/form-data') {
+                console.error('Form missing proper enctype for file uploads!');
+                form.enctype = 'multipart/form-data';
+                console.log('Fixed form enctype to: ' + form.enctype);
+            } else {
+                console.log('Form enctype is correctly set to: ' + form.enctype);
+            }
+        });
+    </script>
+    
     <c:if test="${not empty success}">
         <script>
             Swal.fire("Success", "${success}", "success");
@@ -139,5 +154,74 @@
             <% session.removeAttribute("error"); %>
         </script>
     </c:if>
+    
+    <script>
+        // Form validation
+        document.querySelector('.product-form').addEventListener('submit', function(event) {
+            console.log('Form submission initiated');
+            let isValid = true;
+            const productName = document.getElementById('productName');
+            const productPrice = document.getElementById('productPrice');
+            const productQuantity = document.getElementById('productQuantity');
+            const productDescription = document.getElementById('productDescription');
+            const category = document.getElementById('category');
+            const brand = document.getElementById('brand');
+            
+            // Clear previous error messages
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            document.querySelectorAll('.error-field').forEach(el => el.classList.remove('error-field'));
+            
+            // Validate product name (not empty and not too long)
+            if (!productName.value.trim() || productName.value.length > 100) {
+                showError(productName, 'Product name is required and must be less than 100 characters');
+                isValid = false;
+            }
+            
+            // Validate price (must be a positive number)
+            if (!productPrice.value || parseFloat(productPrice.value) <= 0) {
+                showError(productPrice, 'Price must be a positive number');
+                isValid = false;
+            }
+            
+            // Validate quantity (must be a positive integer)
+            if (!productQuantity.value || parseInt(productQuantity.value) < 1) {
+                showError(productQuantity, 'Quantity must be at least 1');
+                isValid = false;
+            }
+            
+            // Validate description (not empty and not too long)
+            if (!productDescription.value.trim() || productDescription.value.length > 100) {
+                showError(productDescription, 'Description is required and must be less than 100 characters');
+                isValid = false;
+            }
+            
+            // Validate category selection
+            if (category.value === "" || category.value === null) {
+                showError(category, 'Please select a category');
+                isValid = false;
+            }
+            
+            // Validate brand selection
+            if (brand.value === "" || brand.value === null) {
+                showError(brand, 'Please select a brand');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                console.log('Form validation failed');
+                event.preventDefault();
+            } else {
+                console.log('Form validation passed, submitting');
+            }
+        });
+        
+        function showError(inputElement, message) {
+            inputElement.classList.add('error-field');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            inputElement.parentNode.appendChild(errorDiv);
+        }
+    </script>
 </body>
 </html>

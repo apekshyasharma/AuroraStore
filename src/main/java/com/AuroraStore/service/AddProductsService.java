@@ -107,6 +107,12 @@ public class AddProductsService {
             System.out.println("Attempting to add product: " + product.getProduct_name());
             System.out.println("Image name: " + imageName);
             
+            // Verify database connection is valid
+            if (dbConn.isClosed()) {
+                System.err.println("Database connection is closed!");
+                dbConn = DbConfig.getDbConnection(); // Try to reconnect
+            }
+            
             String query = "INSERT INTO products (product_name, image, product_price, product_description, " +
                            "product_quantity, product_status, category_id, brand_id) " +
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -149,15 +155,31 @@ public class AddProductsService {
                     System.out.println("New product ID: " + newProductId);
                 } else {
                     System.out.println("No generated keys returned");
+                    // Try to find the product that was just inserted
+                    try (PreparedStatement findStmt = dbConn.prepareStatement(
+                        "SELECT product_id FROM products WHERE product_name = ? ORDER BY product_id DESC LIMIT 1")) {
+                        findStmt.setString(1, product.getProduct_name());
+                        try (ResultSet findRs = findStmt.executeQuery()) {
+                            if (findRs.next()) {
+                                newProductId = findRs.getInt("product_id");
+                                System.out.println("Found product ID through query: " + newProductId);
+                            }
+                        }
+                    }
                 }
             } else {
                 System.out.println("No rows affected by insert");
             }
         } catch (SQLException e) {
             System.err.println("SQL Error adding product: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             System.err.println("Class not found adding product: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
             e.printStackTrace();
         } finally {
             closeResources(rs, stmt, dbConn);

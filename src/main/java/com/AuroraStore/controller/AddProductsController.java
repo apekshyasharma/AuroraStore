@@ -87,6 +87,12 @@ public class AddProductsController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("AddProductsController: doPost method called");
         
+        // Debug form parameters
+        System.out.println("Request parameters:");
+        for (String paramName : request.getParameterMap().keySet()) {
+            System.out.println(paramName + ": " + request.getParameter(paramName));
+        }
+        
         HttpSession session = request.getSession();
         
         // Check if user is admin
@@ -158,6 +164,9 @@ public class AddProductsController extends HttpServlet {
             
             if (filePart != null && filePart.getSize() > 0) {
                 System.out.println("File part size: " + filePart.getSize());
+                System.out.println("Content type: " + filePart.getContentType());
+                System.out.println("Submitted file name: " + filePart.getSubmittedFileName());
+                
                 if (!ValidationUtil.isValidImageExtension(filePart)) {
                     handleError(request, response, "Invalid image format. Only jpg, jpeg, png, and gif allowed.");
                     return;
@@ -177,6 +186,7 @@ public class AddProductsController extends HttpServlet {
             product.setProduct_status(productStatus);
             product.setCategory_id(categoryId);
             product.setBrand_id(brandId);
+            product.setImage(imageName); // Set image name
             
             // Add product to database
             System.out.println("Adding product to database: " + product.getProduct_name());
@@ -193,6 +203,7 @@ public class AddProductsController extends HttpServlet {
                     if (!uploadSuccess) {
                         // Continue even if image upload fails - product is already in DB
                         System.err.println("Image upload failed, but product was added to database");
+                        session.setAttribute("warning", "Product was added, but there was an issue uploading the image.");
                     }
                 }
                 

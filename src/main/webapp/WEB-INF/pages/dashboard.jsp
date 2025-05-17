@@ -164,7 +164,7 @@
         <div class="section-header">
             <h2><i class="fas fa-box"></i> All Products</h2>
             <div class="action-buttons">
-                <button class="add-btn">
+                <button class="add-btn" onclick="window.location.href='${pageContext.request.contextPath}/addproducts'">
                     <i class="fas fa-plus"></i> Add Product
                 </button>
             </div>
