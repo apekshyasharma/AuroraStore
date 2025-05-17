@@ -246,4 +246,205 @@ public class DashboardService {
         
         return totalValue;
     }
+    
+    /**
+     * Retrieves a user by ID
+     * @param userId The ID of the user to retrieve
+     * @return UsersModel object with user information, or null if not found
+     */
+    public UsersModel getUserById(int userId) {
+        Connection dbConn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        UsersModel user = null;
+        
+        try {
+            dbConn = DbConfig.getDbConnection();
+            String query = "SELECT u.user_id, u.user_name, u.user_email, u.contact_number, " +
+                           "DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i:%s') as created_at, " +
+                           "u.role_id, r.role_type FROM users u " +
+                           "JOIN user_roles r ON u.role_id = r.role_id " +
+                           "WHERE u.user_id = ?";
+            
+            stmt = dbConn.prepareStatement(query);
+            stmt.setInt(1, userId);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                user = new UsersModel();
+                user.setUser_id(rs.getInt("user_id"));
+                user.setUser_name(rs.getString("user_name"));
+                user.setUser_email(rs.getString("user_email"));
+                user.setContact_number(rs.getString("contact_number"));
+                user.setCreated_at(rs.getString("created_at"));
+                user.setRole_id(rs.getInt("role_id"));
+                user.setImage(rs.getString("role_type")); // Role type
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error retrieving user by ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, stmt, dbConn);
+        }
+        
+        return user;
+    }
+    
+    /**
+     * Updates a user's email and phone number
+     * @param userId The ID of the user to update
+     * @param email The new email address
+     * @param phone The new phone number
+     * @return true if update was successful, false otherwise
+     */
+    public boolean updateUserDetails(int userId, String email, String phone) {
+        Connection dbConn = null;
+        PreparedStatement stmt = null;
+        boolean success = false;
+        
+        try {
+            dbConn = DbConfig.getDbConnection();
+            String query = "UPDATE users SET user_email = ?, contact_number = ? WHERE user_id = ? AND role_id = 1";
+            
+            stmt = dbConn.prepareStatement(query);
+            stmt.setString(1, email);
+            stmt.setString(2, phone);
+            stmt.setInt(3, userId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            success = (rowsAffected > 0);
+            
+            System.out.println("User update result: " + (success ? "Success" : "Failed") + 
+                              ", Rows affected: " + rowsAffected);
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error updating user: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(null, stmt, dbConn);
+        }
+        
+        return success;
+    }
+    
+    /**
+     * Deletes a user from the database
+     * @param userId The ID of the user to delete
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteUser(int userId) {
+        Connection dbConn = null;
+        PreparedStatement stmt = null;
+        boolean success = false;
+        
+        try {
+            dbConn = DbConfig.getDbConnection();
+            // Only delete if the user is an admin (role_id = 1)
+            String query = "DELETE FROM users WHERE user_id = ? AND role_id = 1";
+            
+            stmt = dbConn.prepareStatement(query);
+            stmt.setInt(1, userId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            success = (rowsAffected > 0);
+            
+            System.out.println("User deletion result: " + (success ? "Success" : "Failed") + 
+                              ", Rows affected: " + rowsAffected);
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error deleting user: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(null, stmt, dbConn);
+        }
+        
+        return success;
+    }
+    
+    /**
+     * Checks if an email already exists in the database for a different user
+     * @param email Email to check
+     * @param userId User ID to exclude from the check
+     * @return true if the email exists for another user, false otherwise
+     */
+    public boolean isEmailTaken(String email, int userId) {
+        Connection dbConn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean isTaken = false;
+        
+        try {
+            dbConn = DbConfig.getDbConnection();
+            String query = "SELECT COUNT(*) FROM users WHERE user_email = ? AND user_id != ?";
+            
+            stmt = dbConn.prepareStatement(query);
+            stmt.setString(1, email);
+            stmt.setInt(2, userId);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                isTaken = rs.getInt(1) > 0;
+            }
+            
+            System.out.println("Email availability check: " + email + " is " + 
+                              (isTaken ? "already taken" : "available") + 
+                              " (excluding user ID: " + userId + ")");
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error checking email uniqueness: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, stmt, dbConn);
+        }
+        
+        return isTaken;
+    }
+    
+    /**
+     * Checks if a phone number already exists in the database for a different user
+     * @param phone Phone number to check
+     * @param userId User ID to exclude from the check
+     * @return true if the phone number exists for another user, false otherwise
+     */
+    public boolean isPhoneNumberTaken(String phone, int userId) {
+        Connection dbConn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean isTaken = false;
+        
+        try {
+            dbConn = DbConfig.getDbConnection();
+            String query = "SELECT COUNT(*) FROM users WHERE contact_number = ? AND user_id != ?";
+            
+            stmt = dbConn.prepareStatement(query);
+            stmt.setString(1, phone);
+            stmt.setInt(2, userId);
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                isTaken = rs.getInt(1) > 0;
+            }
+            
+            System.out.println("Phone number availability check: " + phone + " is " + 
+                              (isTaken ? "already taken" : "available") + 
+                              " (excluding user ID: " + userId + ")");
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error checking phone number uniqueness: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(rs, stmt, dbConn);
+        }
+        
+        return isTaken;
+    }
+    
+    /**
+     * Helper method to close database resources
+     */
+    private void closeResources(ResultSet rs, PreparedStatement stmt, Connection conn) {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
+        }
+    }
 }

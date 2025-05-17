@@ -13,6 +13,7 @@ import java.util.List;
 import com.AuroraStore.model.ProductsModel;
 import com.AuroraStore.model.UsersModel;
 import com.AuroraStore.service.DashboardService;
+import com.AuroraStore.util.ValidationUtil;
 
 /**
  * Servlet implementation class DashboardController
@@ -105,7 +106,162 @@ public class DashboardController extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Simply invoke doGet for POST requests
-        doGet(request, response);
+        System.out.println("DashboardController: doPost method called");
+        
+        HttpSession session = request.getSession(false);
+        
+        // Check if the user is logged in and is an admin
+        if (session == null || session.getAttribute("currentUser") == null) {
+            System.out.println("Access denied: User not logged in");
+            session = request.getSession();
+            session.setAttribute("error", "You must be logged in to perform this action.");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        UsersModel currentUser = (UsersModel) session.getAttribute("currentUser");
+        if (currentUser.getRole_id() != 1) {
+            System.out.println("Access denied: User is not an admin");
+            session.setAttribute("error", "You don't have permission to perform this action.");
+            response.sendRedirect(request.getContextPath() + "/welcome");
+            return;
+        }
+        
+        // Get the action parameter
+        String action = request.getParameter("action");
+        
+        if (action != null) {
+            try {
+                if (action.equals("edit")) {
+                    // Handle edit user action
+                    String userIdStr = request.getParameter("userId");
+                    String email = request.getParameter("email");
+                    String phone = request.getParameter("phone");
+                    
+                    // Validate input
+                    if (ValidationUtil.isNullOrEmpty(userIdStr) || ValidationUtil.isNullOrEmpty(email) || ValidationUtil.isNullOrEmpty(phone)) {
+                        session.setAttribute("error", "All fields are required.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Validate email format
+                    if (!ValidationUtil.isValidEmail(email)) {
+                        session.setAttribute("error", "Invalid email format.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Validate phone number format
+                    if (!ValidationUtil.isNumericOnly(phone) || !ValidationUtil.isPhoneNumberLength10(phone)) {
+                        session.setAttribute("error", "Phone number must be 10 digits.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    int userId = Integer.parseInt(userIdStr);
+                    
+                    // Get the user by ID
+                    UsersModel user = dashboardService.getUserById(userId);
+                    
+                    // Check if the user exists and is an admin
+                    if (user == null) {
+                        session.setAttribute("error", "User not found.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    if (user.getRole_id() != 1) {
+                        session.setAttribute("error", "Only admin users can be edited.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Check if email is already taken by another user
+                    if (dashboardService.isEmailTaken(email, userId)) {
+                        session.setAttribute("error", "Email address is already in use by another user.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Check if phone number is already taken by another user
+                    if (dashboardService.isPhoneNumberTaken(phone, userId)) {
+                        session.setAttribute("error", "Phone number is already in use by another user.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Update the user
+                    boolean updated = dashboardService.updateUserDetails(userId, email, phone);
+                    
+                    if (updated) {
+                        // If the edited user is the current user, update the session
+                        if (userId == currentUser.getUser_id()) {
+                            currentUser.setUser_email(email);
+                            currentUser.setContact_number(phone);
+                            session.setAttribute("currentUser", currentUser);
+                        }
+                        
+                        session.setAttribute("success", "User details updated successfully.");
+                    } else {
+                        session.setAttribute("error", "Failed to update user details.");
+                    }
+                    
+                } else if (action.equals("delete")) {
+                    // Handle delete user action
+                    String userIdStr = request.getParameter("userId");
+                    
+                    if (ValidationUtil.isNullOrEmpty(userIdStr)) {
+                        session.setAttribute("error", "User ID is required.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    int userId = Integer.parseInt(userIdStr);
+                    
+                    // Prevent admin from deleting themselves
+                    if (userId == currentUser.getUser_id()) {
+                        session.setAttribute("error", "You cannot delete your own account.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Get the user by ID
+                    UsersModel user = dashboardService.getUserById(userId);
+                    
+                    // Check if the user exists and is an admin
+                    if (user == null) {
+                        session.setAttribute("error", "User not found.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    if (user.getRole_id() != 1) {
+                        session.setAttribute("error", "Only admin users can be deleted.");
+                        response.sendRedirect(request.getContextPath() + "/dashboard");
+                        return;
+                    }
+                    
+                    // Delete the user
+                    boolean deleted = dashboardService.deleteUser(userId);
+                    
+                    if (deleted) {
+                        session.setAttribute("success", "User deleted successfully.");
+                    } else {
+                        session.setAttribute("error", "Failed to delete user.");
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid number format: " + e.getMessage());
+                session.setAttribute("error", "Invalid user ID.");
+            } catch (Exception e) {
+                System.err.println("Error processing request: " + e.getMessage());
+                e.printStackTrace();
+                session.setAttribute("error", "An error occurred: " + e.getMessage());
+            }
+        }
+        
+        // Redirect back to the dashboard
+        response.sendRedirect(request.getContextPath() + "/dashboard");
     }
 }
