@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/products.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add jQuery and SweetAlert scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <%@ include file="header.jsp" %>
@@ -81,8 +84,37 @@
     
     <script>
         function addToCart(productId) {
-            // This function can be implemented later for cart functionality
-            alert('Product added to cart!');
+            // Check if user is logged in by looking for the currentUser attribute in session
+            <c:choose>
+                <c:when test="${empty sessionScope.currentUser}">
+                    /* User is not logged in, show login prompt */
+                    Swal.fire({
+                        title: 'Login Required',
+                        text: 'Please login to add items to your cart',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#800040',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Login Now',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to login page with a return URL parameter
+                            window.location.href = '${pageContext.request.contextPath}/login';
+                        }
+                    });
+                </c:when>
+                <c:otherwise>
+                    /* User is logged in, implement actual cart functionality */
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Product added to cart!',
+                        icon: 'success',
+                        confirmButtonColor: '#800040'
+                    });
+                    // Here you would add actual cart functionality, like an AJAX call to add the item
+                </c:otherwise>
+            </c:choose>
         }
     </script>
 </body>
