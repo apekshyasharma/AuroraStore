@@ -18,14 +18,16 @@
                 <li><a href="${pageContext.request.contextPath}/products">Shop Products</a></li>
                 <li><a href="${pageContext.request.contextPath}/aboutus">About Us</a></li>
                 
-                <c:choose>
-                    <c:when test="${cookie.userRole.value == '1'}">
-                        <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
-                    </c:when>
-                    <c:when test="${cookie.userRole.value == '2'}">
-                        <li><a href="${pageContext.request.contextPath}/portfolio">Portfolio</a></li>
-                    </c:when>
-                </c:choose>
+                <c:if test="${not empty sessionScope.currentUser}">
+                    <c:choose>
+                        <c:when test="${sessionScope.currentUser.role_id == 1}">
+                            <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+                        </c:when>
+                        <c:when test="${sessionScope.currentUser.role_id == 2}">
+                            <li><a href="${pageContext.request.contextPath}/portfolio">Portfolio</a></li>
+                        </c:when>
+                    </c:choose>
+                </c:if>
             </ul>
         </nav>
 
@@ -38,6 +40,11 @@
                         <li><a href="${pageContext.request.contextPath}/login">Login</a></li>
                     </c:when>
                     <c:otherwise>
+                        <li>
+                            <span style="margin-right: 10px;">
+                                Welcome, ${sessionScope.currentUser.user_name}!
+                            </span>
+                        </li>
                         <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
                     </c:otherwise>
                 </c:choose>

@@ -67,13 +67,50 @@ public class ValidationUtil {
         return password != null && password.matches(".*[A-Z].*");
     }
 
-    // 8. Validate if a Part's file extension matches with image extensions (jpg, jpeg, png, gif)
-    public static boolean isValidImageExtension(Part imagePart) {
-        if (imagePart == null || isNullOrEmpty(imagePart.getSubmittedFileName())) {
-            return false;
+    /**
+     * Validates if the uploaded file is an image with allowed extensions
+     */
+    public static boolean isValidImageExtension(Part part) {
+        if (part == null || part.getSize() == 0) {
+            return true; // No image is considered valid for optional images
+        }
+        
+        String fileName = part.getSubmittedFileName();
+        if (fileName == null || fileName.isEmpty()) {
+            return true;
+        }
+        
+        fileName = fileName.toLowerCase();
+        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || 
+               fileName.endsWith(".png") || fileName.endsWith(".gif");
+    }
+    
+    // Alternative method for required image uploads
+    public static boolean isRequiredValidImageExtension(Part imagePart) {
+        if (imagePart == null || imagePart.getSize() == 0 || isNullOrEmpty(imagePart.getSubmittedFileName())) {
+            return false; // No file or empty file is considered invalid for required images
         }
         String fileName = imagePart.getSubmittedFileName().toLowerCase();
         return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") || fileName.endsWith(".gif");
+    }
+
+    /**
+     * Validates that an image file has an allowed extension and size
+     */
+    public static boolean isValidImageFile(Part filePart) {
+        // Check if part exists and has content
+        if (filePart == null || filePart.getSize() == 0) {
+            return true; // No file is valid (not required for this method's logic, could be handled elsewhere if required)
+        }
+        
+        // Check file size (max 10MB)
+        if (filePart.getSize() > 10 * 1024 * 1024) { // Updated to 10MB
+            System.out.println("ValidationUtil: Image size exceeds 10MB. Size: " + filePart.getSize());
+            return false;
+        }
+        
+        // Check file extension
+        return isValidImageExtension(filePart);
     }
 
     // 9. Validate if password and retype password match

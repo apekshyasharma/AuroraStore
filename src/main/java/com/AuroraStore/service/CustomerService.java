@@ -95,4 +95,32 @@ public class CustomerService {
 		{
 
 	}
+	
+	/**
+	 * Checks if an email already exists in the database
+	 * @param email Email to check
+	 * @return true if email exists, false otherwise
+	 */
+	public boolean emailExists(String email) {
+	    if (dbConn == null) {
+	        System.err.println("Database connection is not available.");
+	        return false;
+	    }
+	    
+	    String query = "SELECT COUNT(*) FROM users WHERE user_email = ?";
+	    
+	    try (PreparedStatement stmt = dbConn.prepareStatement(query)) {
+	        stmt.setString(1, email);
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            return rs.getInt(1) > 0;
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error checking email existence: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    return false;
+	}
 }

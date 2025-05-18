@@ -49,6 +49,9 @@ public class RegisterController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
     
+        // First, clear any existing logout messages
+        request.getSession().removeAttribute("success");
+
         // Handle image upload using Part
         Part imagePart = request.getPart("image");
         String imagePath = null;
@@ -116,6 +119,15 @@ public class RegisterController extends HttpServlet {
             return;
         }
         
+        // Create CustomerService instance
+        CustomerService service = new CustomerService();
+        
+        // Check if email already exists
+        if (service.emailExists(userEmail)) {
+            handleError(request, response, "Email address already registered. Please use a different email or login to your existing account.");
+            return;
+        }
+        
         // Create user model
         UsersModel user = new UsersModel();
         user.setUser_name(userName);
@@ -126,7 +138,6 @@ public class RegisterController extends HttpServlet {
         user.setImage(imagePath);
         
         // Register user
-        CustomerService service = new CustomerService();
         if (service.registerCustomer(user)) {
             // Upload image if provided
             if (imagePath != null) {
@@ -136,8 +147,8 @@ public class RegisterController extends HttpServlet {
                 }
             }
             
-            // Store success message in session before redirect
-            request.getSession().setAttribute("success", "Successful Registration"); // Updated message
+            // Then set our registration success message with a different attribute name
+            request.getSession().setAttribute("regSuccess", "Successful Registration");
             
             // Redirect to login page
             response.sendRedirect(request.getContextPath() + "/login");
