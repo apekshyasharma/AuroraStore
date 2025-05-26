@@ -1,1 +1,1 @@
-"# AuroraStore" 
+AuroraStore is a web-based stationery management system which helps in streamlining daily business operations carried out by a stationery store. These operations include handling daily operations involved in the sales, product showcase and management of store’s inventory. AuroraStore emphasizes user management, as it provides independent platform tailored to users based on their role preferences. It is completely developed using Jakarta EE which provides multiple browsing interfaces for different user needs.
