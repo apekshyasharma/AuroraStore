@@ -115,7 +115,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_password`, `image`, `contact_number`, `created_at`, `role_id`) VALUES
-(1, 'Admin', 'admin@gmail.com', 'Admin@123', NULL, '9767934708', '2025-05-17 15:36:48', 1),
+(1, 'Admin', 'admin@gmail.com', 'Admin@123', NULL, '1234568594', '2025-05-17 15:36:48', 1),
 (20, 'Jensen', 'jensen@gmail.com', 'yhBAdEwxvjdNW1Crzm9QKkTbs7TBsT9q3B7e/VfelJuYExLg8iLKbRcVrnTxg/IdRfuvjMDW', '1747539740466_JensenAckles.jpg', '9847583921', '2025-05-18 03:42:20', 2),
 (21, 'Jared', 'jared@gmail.com', 'OW6O2lEIEABIkmf7KwFQNoV4ebDQJkkWAXcdCiTVyabGuW2ON4zp3u//0oj60MzJePw54Sg=', '1747540600993_jared.jpg', '9876543217', '2025-05-18 03:56:41', 2),
 (22, 'Usha', 'usha@gmail.com', 'GSd7KRgYb5VPrONGWgFLwWnujHu+aSE0A1mHiBHm2DEolV7aFK8DphE2Or5yQfqOSfYf/A==', '1747542775225_ushaProfile.jpg', '9887766556', '2025-05-18 04:32:55', 2),
